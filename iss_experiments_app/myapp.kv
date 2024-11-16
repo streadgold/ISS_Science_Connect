@@ -1,0 +1,117 @@
+#:import dp kivy.metrics.dp
+
+<SplashScreen>:
+    RelativeLayout:
+        Image:
+            source: "assets/images/iss_ram_view.jpg"
+            allow_stretch: True
+            keep_ratio: False
+            size: self.parent.size
+            pos: self.parent.pos
+
+        MDLabel:
+            text: "Welcome to ISS Experiments App"
+            halign: "center"
+            font_style: "H4"
+            size_hint_y: None
+            height: self.texture_size[1]
+            pos_hint: {"center_x": 0.5, "center_y": 0.5}
+            color: 1, 1, 1, 1  # White text for better visibility
+
+<DashboardScreen>:
+    MDBoxLayout:
+        orientation: 'vertical'
+        padding: dp(20)
+        spacing: dp(20)
+
+        MDLabel:
+            text: "Dashboard"
+            font_style: "H5"
+            halign: "center"
+
+        ScrollView:
+            MDBoxLayout:
+                id: experiment_buttons
+                orientation: 'vertical'
+                size_hint_y: None
+                height: self.minimum_height
+                spacing: dp(10)
+                padding: dp(10)
+
+<QuizScreen>:
+    MDBoxLayout:
+        orientation: 'vertical'
+        padding: dp(20)
+        spacing: dp(20)
+
+        MDLabel:
+            text: root.question
+            font_style: "H5"
+            halign: "center"
+
+        MDBoxLayout:
+            orientation: 'vertical'
+            spacing: dp(10)
+            padding: dp(10)
+
+            MDRaisedButton:
+                text: root.options[0]
+                on_release: root.check_answer(self.text)
+            MDRaisedButton:
+                text: root.options[1]
+                on_release: root.check_answer(self.text)
+            MDRaisedButton:
+                text: root.options[2]
+                on_release: root.check_answer(self.text)
+            MDRaisedButton:
+                text: root.options[3]
+                on_release: root.check_answer(self.text)
+
+        MDLabel:
+            id: feedback
+            text: ""
+            halign: 'center'
+            theme_text_color: 'Secondary'
+
+        MDRaisedButton:
+            text: "Back to Dashboard"
+            pos_hint: {"center_x": 0.5}
+            on_release: root.go_back_to_dashboard()
+
+<ExperimentScreen>:
+    MDBoxLayout:
+        orientation: 'vertical'
+        spacing: dp(10)
+        padding: dp(20)
+
+        MDLabel:
+            text: root.title
+            font_style: "H5"
+            halign: "center"
+            size_hint_y: None
+            height: self.texture_size[1]
+
+        MDBoxLayout:
+            orientation: 'horizontal'
+            spacing: dp(20)
+
+            ScrollView:
+                MDLabel:
+                    text: root.content
+                    size_hint_x: 0.7
+                    valign: 'top'
+                    text_size: self.width, None
+                    padding: dp(10), dp(10)
+
+            Image:
+                source: root.image_source
+                size_hint_x: 0.3
+                allow_stretch: True
+                keep_ratio: True
+
+        MDRaisedButton:
+            text: "Back to Dashboard"
+            pos_hint: {"center_x": 0.5}
+            size_hint_y: None
+            height: dp(50)
+            on_release: root.go_back_to_dashboard()
