@@ -1,11 +1,36 @@
 #:import dp kivy.metrics.dp
 
+# Define a custom CircularButton
+<CircularButton@Button>:
+    size_hint: None, None
+    size: dp(15), dp(15)  # Must be square to produce a perfect circle
+    background_normal: ''  # Remove default background image
+    background_down: ''    # Remove default background when pressed
+    background_color: 0, 0, 0, 0  # Fully transparent
+    font_size: 0  # Remove any text
+
+    # Define the circular shape and styling using canvas
+    canvas.before:
+        Color:
+            rgba: 0.5, 0.7, 1, 0.8  # Light blue interior
+        Ellipse:
+            pos: self.pos
+            size: self.size
+            angle_start: 0
+            angle_end: 360
+
+        Color:
+            rgba: 1, 1, 1, 1  # White outline
+        Line:
+            width: 2
+            ellipse: (self.x, self.y, self.width, self.height, 0, 360)
+
 <SplashScreen>:
     RelativeLayout:
         Image:
             source: "assets/images/iss_ram_view.jpg"
-            allow_stretch: True
-            keep_ratio: False
+            allow_stretch: False
+            keep_ratio: True
             size: self.parent.size
             pos: self.parent.pos
 
@@ -16,27 +41,42 @@
             size_hint_y: None
             height: self.texture_size[1]
             pos_hint: {"center_x": 0.5, "center_y": 0.5}
-            color: 1, 1, 1, 1  # White text for better visibility
+            color: 1, 1, 1, 1  # White text for visibility
 
 <DashboardScreen>:
-    MDBoxLayout:
-        orientation: 'vertical'
-        padding: dp(20)
-        spacing: dp(20)
+    RelativeLayout:
+        Image:
+            source: "assets/images/transparent_ISS.png"
+            allow_stretch: False
+            keep_ratio: True
+            size_hint: 1, 0.8  # Occupies 80% of the vertical space
+            pos_hint: {"x":0, "y":0.2}
 
-        MDLabel:
-            text: "Dashboard"
-            font_style: "H5"
-            halign: "center"
+        FloatLayout:
+            id: dashboard_buttons
+            size_hint: 1, 0.8
+            pos_hint: {"x":0, "y":0.2}
+            # Experiment buttons will be dynamically added here as CircularButtons
 
-        ScrollView:
-            MDBoxLayout:
-                id: experiment_buttons
-                orientation: 'vertical'
-                size_hint_y: None
-                height: self.minimum_height
-                spacing: dp(10)
-                padding: dp(10)
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint: 1, 0.2  # Occupies the bottom 20% of the screen
+            pos_hint: {"x":0, "y":0}
+            padding: dp(10)
+            spacing: dp(10)
+
+            MDRaisedButton:
+                text: "Home"
+                size_hint: None, None
+                size: dp(100), dp(50)
+                on_release: app.root.current = 'dashboard'
+
+            MDRaisedButton:
+                text: "Settings"
+                size_hint: None, None
+                size: dp(100), dp(50)
+                on_release: print("Settings Button Pressed")
+                # You can bind this to a settings screen if defined
 
 <QuizScreen>:
     MDBoxLayout:
@@ -106,7 +146,7 @@
             Image:
                 source: root.image_source
                 size_hint_x: 0.3
-                allow_stretch: True
+                allow_stretch: False
                 keep_ratio: True
 
         MDRaisedButton:
