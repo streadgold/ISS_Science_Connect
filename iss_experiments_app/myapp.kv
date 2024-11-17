@@ -94,19 +94,6 @@
                 on_release:
                     app.root.current = 'adventure'
 
-            TextInput:
-                id: search_input_dashboard
-                hint_text: "Ask..."
-                size_hint: (1, 1)
-                multiline: False
-
-            Button:
-                id: ask_button_dashboard
-                text: "Ask"
-                size_hint: (None, 1)
-                width: dp(100)
-                on_release:
-                    root.ask_question()
 
 <HomeScreen>:
     name: 'home'
@@ -146,43 +133,6 @@
                     app.root.current = 'dashboard'
                 background_color: 0.2, 0.6, 0.86, 1  # Button color
                 color: 1, 1, 1, 1  # Text color
-
-        # Bottom Navigation Bar
-        BoxLayout:
-            orientation: 'horizontal'
-            size_hint: (1, None)
-            height: dp(60)
-            padding: dp(10)
-            spacing: dp(10)
-            pos_hint: {'x': 0, 'y': 0}  # Positioned at the bottom
-
-            Button:
-                text: "Home"
-                size_hint: (None, 1)
-                width: dp(100)
-                on_release:
-                    app.root.current = 'home'
-
-            Button:
-                text: "Adventure"
-                size_hint: (None, 1)
-                width: dp(100)
-                on_release:
-                    app.root.current = 'adventure'
-
-            TextInput:
-                id: search_input_home
-                hint_text: "Ask..."
-                size_hint: (1, 1)
-                multiline: False
-
-            Button:
-                text: "Ask"
-                size_hint: (None, 1)
-                width: dp(100)
-                on_release:
-                    # Implement ask functionality
-                    print(f"Ask: {search_input_home.text}")
 
 <AdventureScreen>:
     name: 'adventure'
@@ -293,13 +243,26 @@
                         background_color: 0.2, 0.6, 0.86, 1  # Button color
                         color: 1, 1, 1, 1  # Text color
 
-            # Right Side: Image Display
-            Image:
-                id: adventure_image
-                source: "assets/images/default.png"
+            # Right Side: Image Display and Voice Button
+            BoxLayout:
+                orientation: 'vertical'
                 size_hint: (0.4, 1)
-                allow_stretch: True
-                keep_ratio: True
+                spacing: dp(10)
+
+                Image:
+                    id: adventure_image
+                    source: "assets/images/default.png"
+                    allow_stretch: True
+                    keep_ratio: True
+
+                Button:
+                    id: play_audio_button
+                    text: "Play Audio"
+                    size_hint: (1, None)
+                    height: dp(50)
+                    on_release: root.play_audio()
+                    background_color: 0.2, 0.6, 0.86, 1  # Button color
+                    color: 1, 1, 1, 1  # Text color
 
 <QuizScreen>:
     name: 'quiz'
