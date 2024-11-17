@@ -1,157 +1,580 @@
-#:import dp kivy.metrics.dp
+# myapp.kv
 
-# Define a custom CircularButton
-<CircularButton@Button>:
-    size_hint: None, None
-    size: dp(15), dp(15)  # Must be square to produce a perfect circle
-    background_normal: ''  # Remove default background image
-    background_down: ''    # Remove default background when pressed
-    background_color: 0, 0, 0, 0  # Fully transparent
-    font_size: 0  # Remove any text
-
-    # Define the circular shape and styling using canvas
+<CircularButton>:
+    # No text assigned
     canvas.before:
         Color:
-            rgba: 0.5, 0.7, 1, 0.8  # Light blue interior
+            rgba: 0, 0, 1, 1  # Blue color
         Ellipse:
             pos: self.pos
             size: self.size
-            angle_start: 0
-            angle_end: 360
-
-        Color:
-            rgba: 1, 1, 1, 1  # White outline
-        Line:
-            width: 2
-            ellipse: (self.x, self.y, self.width, self.height, 0, 360)
-
-<SplashScreen>:
-    RelativeLayout:
-        Image:
-            source: "assets/images/iss_ram_view.jpg"
-            allow_stretch: False
-            keep_ratio: True
-            size: self.parent.size
-            pos: self.parent.pos
-
-        MDLabel:
-            text: "Welcome to ISS Experiments App"
-            halign: "center"
-            font_style: "H4"
-            size_hint_y: None
-            height: self.texture_size[1]
-            pos_hint: {"center_x": 0.5, "center_y": 0.5}
-            color: 1, 1, 1, 1  # White text for visibility
 
 <DashboardScreen>:
-    RelativeLayout:
+    name: 'dashboard'
+    FloatLayout:
+        #Optional: Remove or comment out the Image widget if you don't want a background image
         Image:
-            source: "assets/images/transparent_ISS.png"
-            allow_stretch: False
+            source: 'assets/images/transparent_ISS.png'
+            allow_stretch: True
             keep_ratio: True
-            size_hint: 1, 0.8  # Occupies 80% of the vertical space
-            pos_hint: {"x":0, "y":0.2}
+            size_hint: (1, 1)
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+            padding: dp(100)  # Adds padding around the image
 
-        FloatLayout:
-            id: dashboard_buttons
-            size_hint: 1, 0.8
-            pos_hint: {"x":0, "y":0.2}
-            # Experiment buttons will be dynamically added here as CircularButtons
-
+        # Main Content
         BoxLayout:
-            orientation: 'horizontal'
-            size_hint: 1, 0.2  # Occupies the bottom 20% of the screen
-            pos_hint: {"x":0, "y":0}
-            padding: dp(10)
-            spacing: dp(10)
-
-            MDRaisedButton:
-                text: "Home"
-                size_hint: None, None
-                size: dp(100), dp(50)
-                on_release: app.root.current = 'dashboard'
-
-            MDRaisedButton:
-                text: "Settings"
-                size_hint: None, None
-                size: dp(100), dp(50)
-                on_release: print("Settings Button Pressed")
-                # You can bind this to a settings screen if defined
-
-<QuizScreen>:
-    MDBoxLayout:
-        orientation: 'vertical'
-        padding: dp(20)
-        spacing: dp(20)
-
-        MDLabel:
-            text: root.question
-            font_style: "H5"
-            halign: "center"
-
-        MDBoxLayout:
             orientation: 'vertical'
             spacing: dp(10)
+            padding: dp(20)
+            size_hint: (1, 1)
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+
+            Label:
+                text: "Dashboard"
+                font_size: '24sp'
+                size_hint_y: None
+                height: dp(50)
+                color: 1, 1, 1, 1  # White text
+                halign: 'center'
+                valign: 'middle'
+                text_size: self.width, None
+
+            DashboardRecycleView:
+                id: dashboard_recycleview
+                viewclass: 'CircularButton'
+                do_scroll_y: True
+                do_scroll_x: False
+
+                RecycleGridLayout:
+                    cols: 4
+                    default_size: dp(60), dp(60)  # Increased size for better visibility
+                    default_size_hint: None, None
+                    size_hint_y: None
+                    height: self.minimum_height
+                    spacing: dp(20)  # Increased spacing for better layout
+                    padding: dp(20)
+
+            # Search Results Display
+            ScrollView:
+                id: search_results_scroll
+                size_hint: (1, 0.3)
+                do_scroll_x: False
+
+                Label:
+                    id: search_results_label
+                    text: ""
+                    size_hint_y: None
+                    height: self.texture_size[1]
+                    text_size: self.width, None
+                    halign: 'left'
+                    valign: 'top'
+                    color: 1, 1, 1, 1  # White text
+                    markup: True  # Enable markup for text formatting
+
+        # Bottom Navigation Bar
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint: (1, None)
+            height: dp(60)
             padding: dp(10)
+            spacing: dp(10)
+            pos_hint: {'x': 0, 'y': 0}  # Positioned at the bottom
 
-            MDRaisedButton:
-                text: root.options[0]
-                on_release: root.check_answer(self.text)
-            MDRaisedButton:
-                text: root.options[1]
-                on_release: root.check_answer(self.text)
-            MDRaisedButton:
-                text: root.options[2]
-                on_release: root.check_answer(self.text)
-            MDRaisedButton:
-                text: root.options[3]
-                on_release: root.check_answer(self.text)
+            Button:
+                text: "Home"
+                size_hint: (None, 1)
+                width: dp(100)
+                on_release:
+                    app.root.current = 'home'
 
-        MDLabel:
-            id: feedback
-            text: ""
-            halign: 'center'
-            theme_text_color: 'Secondary'
+            Button:
+                text: "Adventure"
+                size_hint: (None, 1)
+                width: dp(100)
+                on_release:
+                    app.root.current = 'adventure'
 
-        MDRaisedButton:
-            text: "Back to Dashboard"
-            pos_hint: {"center_x": 0.5}
-            on_release: root.go_back_to_dashboard()
+            TextInput:
+                id: search_input_dashboard
+                hint_text: "Ask..."
+                size_hint: (1, 1)
+                multiline: False
 
-<ExperimentScreen>:
-    MDBoxLayout:
-        orientation: 'vertical'
-        spacing: dp(10)
-        padding: dp(20)
+            Button:
+                id: ask_button_dashboard
+                text: "Ask"
+                size_hint: (None, 1)
+                width: dp(100)
+                on_release:
+                    root.ask_question()
 
-        MDLabel:
-            text: root.title
-            font_style: "H5"
-            halign: "center"
-            size_hint_y: None
-            height: self.texture_size[1]
+<HomeScreen>:
+    name: 'home'
+    FloatLayout:
+        # Black Background
+        canvas.before:
+            Color:
+                rgba: 0, 0, 0, 1  # Black color
+            Rectangle:
+                pos: self.pos
+                size: self.size
 
-        MDBoxLayout:
+        # Main Content
+        BoxLayout:
+            orientation: 'vertical'
+            spacing: dp(10)
+            padding: dp(20)
+            size_hint: (1, 1)
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+
+            Label:
+                text: "Home"
+                font_size: '24sp'
+                size_hint_y: None
+                height: dp(50)
+                color: 1, 1, 1, 1  # White text
+                halign: 'center'
+                valign: 'middle'
+                text_size: self.width, None
+
+            Button:
+                text: "Go to Dashboard"
+                size_hint: (None, None)
+                size: (dp(200), dp(50))
+                pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                on_release:
+                    app.root.current = 'dashboard'
+                background_color: 0.2, 0.6, 0.86, 1  # Button color
+                color: 1, 1, 1, 1  # Text color
+
+        # Bottom Navigation Bar
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint: (1, None)
+            height: dp(60)
+            padding: dp(10)
+            spacing: dp(10)
+            pos_hint: {'x': 0, 'y': 0}  # Positioned at the bottom
+
+            Button:
+                text: "Home"
+                size_hint: (None, 1)
+                width: dp(100)
+                on_release:
+                    app.root.current = 'home'
+
+            Button:
+                text: "Adventure"
+                size_hint: (None, 1)
+                width: dp(100)
+                on_release:
+                    app.root.current = 'adventure'
+
+            TextInput:
+                id: search_input_home
+                hint_text: "Ask..."
+                size_hint: (1, 1)
+                multiline: False
+
+            Button:
+                text: "Ask"
+                size_hint: (None, 1)
+                width: dp(100)
+                on_release:
+                    # Implement ask functionality
+                    print(f"Ask: {search_input_home.text}")
+
+<AdventureScreen>:
+    name: 'adventure'
+    FloatLayout:
+        # Black Background
+        canvas.before:
+            Color:
+                rgba: 0, 0, 0, 1  # Black color
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        # Main Content Layout
+        BoxLayout:
             orientation: 'horizontal'
             spacing: dp(20)
+            padding: dp(20)
+            size_hint: (1, 1)
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
 
-            ScrollView:
-                MDLabel:
-                    text: root.content
-                    size_hint_x: 0.7
-                    valign: 'top'
-                    text_size: self.width, None
-                    padding: dp(10), dp(10)
+            # Left Side: Text and Controls
+            BoxLayout:
+                orientation: 'vertical'
+                spacing: dp(20)
+                size_hint: (0.6, 1)
 
+                # Header with Back Button, Title, and Difficulty Toggle
+                BoxLayout:
+                    orientation: 'horizontal'
+                    size_hint_y: None
+                    height: dp(50)
+                    spacing: dp(10)
+                    padding: dp(10)
+
+                    Button:
+                        text: "< Back"
+                        size_hint_x: None
+                        width: dp(100)
+                        on_release: root.go_back_to_dashboard()
+                        background_normal: ''  # Removes default background
+                        background_color: 0, 0, 0, 0  # Transparent background
+                        color: 1, 1, 1, 1  # Text color
+
+                    Label:
+                        text: "Adventure"
+                        font_size: '24sp'
+                        color: 1, 1, 1, 1  # White text
+                        halign: 'center'
+                        valign: 'middle'
+                        text_size: self.width, None
+
+                    # Difficulty Toggle
+                    BoxLayout:
+                        orientation: 'horizontal'
+                        size_hint_x: None
+                        width: dp(150)
+                        spacing: dp(10)
+                        padding: dp(5)
+
+                        Label:
+                            text: "Difficulty:"
+                            color: 1, 1, 1, 1  # White text
+                            size_hint_x: None
+                            width: dp(80)
+
+                        ToggleButton:
+                            id: difficulty_toggle
+                            text: "Medium"
+                            state: 'normal'
+                            size_hint_x: None
+                            width: dp(70)
+                            on_state: root.toggle_difficulty(self, self.state == 'down')
+
+                ScrollView:
+                    do_scroll_x: False
+                    BoxLayout:
+                        orientation: 'vertical'
+                        size_hint_y: None
+                        height: self.minimum_height
+                        spacing: dp(10)
+
+                        Label:
+                            id: adventure_story
+                            text: root.story
+                            size_hint_y: None
+                            height: self.texture_size[1]
+                            text_size: self.width, None
+                            halign: 'left'
+                            valign: 'top'
+                            color: 1, 1, 1, 1  # White text
+                            markup: True  # Enable markup for color coding
+
+                BoxLayout:
+                    size_hint_y: None
+                    height: dp(50)
+                    spacing: dp(10)
+
+                    TextInput:
+                        id: adventure_input
+                        hint_text: "Type your action here..."
+                        size_hint: (1, 1)
+                        multiline: False
+
+                    Button:
+                        id: submit_button
+                        text: "Submit"
+                        on_release: root.process_adventure_action()
+                        background_color: 0.2, 0.6, 0.86, 1  # Button color
+                        color: 1, 1, 1, 1  # Text color
+
+            # Right Side: Image Display
             Image:
-                source: root.image_source
-                size_hint_x: 0.3
-                allow_stretch: False
+                id: adventure_image
+                source: "assets/images/default.png"
+                size_hint: (0.4, 1)
+                allow_stretch: True
                 keep_ratio: True
 
-        MDRaisedButton:
-            text: "Back to Dashboard"
-            pos_hint: {"center_x": 0.5}
-            size_hint_y: None
-            height: dp(50)
-            on_release: root.go_back_to_dashboard()
+<QuizScreen>:
+    name: 'quiz'
+    FloatLayout:
+        # Black Background
+        canvas.before:
+            Color:
+                rgba: 0, 0, 0, 1  # Black color
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        # Main Content
+        BoxLayout:
+            orientation: 'vertical'
+            spacing: dp(20)
+            padding: dp(20)
+            size_hint: (1, 1)
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+
+            # Header with Back Button and Title
+            BoxLayout:
+                orientation: 'horizontal'
+                size_hint_y: None
+                height: dp(50)
+                spacing: dp(10)
+                padding: dp(10)
+
+                Button:
+                    text: "< Back"
+                    size_hint_x: None
+                    width: dp(100)
+                    on_release: root.go_back_to_dashboard()
+                    background_normal: ''  # Removes default background
+                    background_color: 0, 0, 0, 0  # Transparent background
+                    color: 1, 1, 1, 1  # Text color
+
+                Label:
+                    text: "Quiz"
+                    font_size: '24sp'
+                    color: 1, 1, 1, 1  # White text
+                    halign: 'center'
+                    valign: 'middle'
+                    text_size: self.width, None
+
+            Label:
+                text: root.question
+                font_size: '20sp'
+                size_hint_y: None
+                height: dp(50)
+                color: 1, 1, 1, 1  # White text
+                halign: 'center'
+                valign: 'middle'
+                text_size: self.width, None
+
+            BoxLayout:
+                orientation: 'vertical'
+                spacing: dp(10)
+                size_hint_y: None
+                height: dp(200)
+
+                Button:
+                    text: root.options[0]
+                    on_release: root.check_answer(self.text)
+                    background_color: 0.2, 0.6, 0.86, 1  # Button color
+                    color: 1, 1, 1, 1  # Text color
+
+                Button:
+                    text: root.options[1]
+                    on_release: root.check_answer(self.text)
+                    background_color: 0.2, 0.6, 0.86, 1
+                    color: 1, 1, 1, 1
+
+                Button:
+                    text: root.options[2]
+                    on_release: root.check_answer(self.text)
+                    background_color: 0.2, 0.6, 0.86, 1
+                    color: 1, 1, 1, 1
+
+                Button:
+                    text: root.options[3]
+                    on_release: root.check_answer(self.text)
+                    background_color: 0.2, 0.6, 0.86, 1
+                    color: 1, 1, 1, 1
+
+            Label:
+                id: feedback
+                text: ""
+                font_size: '18sp'
+                size_hint_y: None
+                height: dp(30)
+                color: 1, 1, 1, 1  # White text
+
+            Button:
+                text: "Back to Dashboard"
+                size_hint: (None, None)
+                size: (dp(200), dp(40))
+                pos_hint: {"center_x": 0.5}
+                on_release: root.go_back_to_dashboard()
+                background_color: 0.2, 0.6, 0.86, 1  # Button color
+                color: 1, 1, 1, 1  # Text color
+
+        # Bottom Navigation Bar
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint: (1, None)
+            height: dp(60)
+            padding: dp(10)
+            spacing: dp(10)
+            pos_hint: {'x': 0, 'y': 0}  # Positioned at the bottom
+
+            Button:
+                text: "Home"
+                size_hint: (None, 1)
+                width: dp(100)
+                on_release:
+                    app.root.current = 'home'
+
+            Button:
+                text: "Adventure"
+                size_hint: (None, 1)
+                width: dp(100)
+                on_release:
+                    app.root.current = 'adventure'
+
+            TextInput:
+                id: search_input_quiz
+                hint_text: "Ask..."
+                size_hint: (1, 1)
+                multiline: False
+
+            Button:
+                text: "Ask"
+                size_hint: (None, 1)
+                width: dp(100)
+                on_release:
+                    # Implement ask functionality
+                    print(f"Ask: {search_input_quiz.text}")
+
+<ExperimentScreen>:
+    name: root.name
+    FloatLayout:
+        # Black Background
+        canvas.before:
+            Color:
+                rgba: 0, 0, 0, 1  # Black color
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        # Main Content
+        BoxLayout:
+            orientation: 'vertical'
+            spacing: dp(20)
+            padding: dp(20)
+            size_hint: (1, 1)
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+            padding: dp(10), dp(30), dp(10), dp(0)  # Add top padding to raise the content
+
+            # Header with Back Button and Title
+            BoxLayout:
+                orientation: 'horizontal'
+                size_hint_y: None
+                height: dp(50)
+                spacing: dp(10)
+                padding: dp(10)
+
+                Button:
+                    text: "< Back"
+                    size_hint_x: None
+                    width: dp(100)
+                    on_release: root.go_back_to_dashboard()
+                    background_normal: ''  # Removes default background
+                    background_color: 0, 0, 0, 0  # Transparent background
+                    color: 1, 1, 1, 1  # Text color
+
+                Label:
+                    text: root.title
+                    font_size: '24sp'
+                    color: 1, 1, 1, 1  # White text
+                    halign: 'center'
+                    valign: 'middle'
+                    text_size: self.width, None
+
+            # Description and Image Layout
+            BoxLayout:
+                # This is the main container with a horizontal layout.
+                # It contains two sections: a text description on the left and an image on the right.
+                orientation: 'horizontal'
+                spacing: dp(20)  # Space between the two sections
+                padding: dp(10)  # Padding around the entire layout
+                size_hint_y: None  # Do not scale vertically; use a fixed height
+                height: dp(300)  # Fixed height of the entire layout
+
+                # Description Section (Left)
+                BoxLayout:
+                    # This container is for the text description.
+                    # It has a vertical layout to stack elements (if needed) vertically.
+                    orientation: 'vertical'
+                    size_hint_x: 0.6  # Take up 60% of the width of the parent container
+                    spacing: dp(10)  # Space between elements inside this container
+                    padding: dp(10)  # Padding inside the container to keep content spaced inwards
+
+                    Label:
+                        # The Label widget displays the text description.
+                        text: root.content  # The text to display comes from the root property 'content'
+                        size_hint_y: None  # Do not scale vertically; the height is determined dynamically
+                        text_size: self.width, None  # Wrap text within the Label's width
+                        pos_hint: {"x": 0, "y": 0.6}  # Raise text by adjusting "y" (20%)
+                        height: self.texture_size[1]  # Dynamically adjust height based on text content
+                        halign: 'center'  # Align the text to the left horizontally
+                        valign: 'top'  # Center the text vertically within the Label
+                        color: 1, 1, 1, 1  # Set the text color to white (RGBA format)
+
+                # Image Section (Right)
+                BoxLayout:
+                    # This container holds the image and allows alignment adjustments.
+                    size_hint_x: 0.4  # Take up 40% of the width of the parent container
+                    size_hint_y: None  # Do not scale vertically; use a fixed height
+                    height: dp(300)  # Match the height of the parent container
+                    padding: dp(10)  # Padding around the image for spacing
+                    pos_hint: {'center_y': 0.5}  # Center this container vertically in the parent
+
+                    Image:
+                        # The Image widget displays the image.
+                        source: root.image_source  # The image file path comes from the root property 'image_source'
+                        allow_stretch: True  # Allow the image to stretch to fit its container
+                        keep_ratio: True  # Maintain the aspect ratio of the image
+                        size_hint: None, None  # Disable automatic sizing to allow explicit size control
+                        size: self.parent.size  # Match the size of the parent BoxLayout
+
+
+            # Back to Dashboard Button
+            Button:
+                text: "Back to Dashboard"
+                size_hint: (None, None)
+                size: (dp(200), dp(40))
+                pos_hint: {"center_x": 0.5}
+                on_release: root.go_back_to_dashboard()
+                background_color: 0.2, 0.6, 0.86, 1  # Button color
+                color: 1, 1, 1, 1  # Text color
+
+        # Bottom Navigation Bar
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint: (1, None)
+            height: dp(60)
+            padding: dp(10)
+            spacing: dp(10)
+            pos_hint: {'x': 0, 'y': 0}  # Positioned at the bottom
+
+            Button:
+                text: "Home"
+                size_hint: (None, 1)
+                width: dp(100)
+                on_release:
+                    app.root.current = 'home'
+
+            Button:
+                text: "Adventure"
+                size_hint: (None, 1)
+                width: dp(100)
+                on_release:
+                    app.root.current = 'adventure'
+
+            TextInput:
+                id: search_input_experiment
+                hint_text: "Ask..."
+                size_hint: (1, 1)
+                multiline: False
+
+            Button:
+                text: "Ask"
+                size_hint: (None, 1)
+                width: dp(100)
+                on_release:
+                    # Implement ask functionality
+                    print(f"Ask: {search_input_experiment.text}")
