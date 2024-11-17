@@ -24,6 +24,7 @@ import sqlite3
 import requests
 from PIL import Image as PILImage  # Import Pillow's Image module
 from openai import OpenAI  # Adjust the import based on actual OpenAI client
+import time
 import openai
 import base64
 import logging
@@ -381,6 +382,7 @@ class AdventureScreen(Screen):
             "Describe the immediate actions you take, the challenges you face, and how you utilize modern technology to stabilize the situation."
         )
         threading.Thread(target=self.generate_narration, args=(initial_prompt,)).start()
+        
 
     def generate_narration(self, prompt):
         """
@@ -534,7 +536,7 @@ class AdventureScreen(Screen):
         """
         rating_prompt = (
             "Based on the following adventure, provide a performance rating for the player's decisions. "
-            "Be honest but encouraging, highlighting both strengths and areas for improvement. "
+            "Be honest but encouraging, highlighting both strengths and areas for improvement. Esnure the response is less than 200 words."
             "Format the rating as follows:\n\n"
             "Performance Rating:\n"
             "Score: X/10\n"
@@ -565,7 +567,7 @@ class AdventureScreen(Screen):
             response = client.chat.completions.create(
                 model="gpt-4o",  # Ensure this model exists and supports audio
                 messages=self.context,
-                max_tokens=150,
+                max_tokens=250,
                 temperature=0.5,  # Balanced creativity
             )
 

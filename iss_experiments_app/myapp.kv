@@ -29,15 +29,6 @@
             size_hint: (1, 1)
             pos_hint: {'center_x': 0.5, 'center_y': 0.5}
 
-            Label:
-                text: "Dashboard"
-                font_size: '24sp'
-                size_hint_y: None
-                height: dp(50)
-                color: 1, 1, 1, 1  # White text
-                halign: 'center'
-                valign: 'middle'
-                text_size: self.width, None
 
             DashboardRecycleView:
                 id: dashboard_recycleview
@@ -495,49 +486,5 @@
                         size: self.parent.size  # Match the size of the parent BoxLayout
 
 
-            # Back to Dashboard Button
-            Button:
-                text: "Back to Dashboard"
-                size_hint: (None, None)
-                size: (dp(200), dp(40))
-                pos_hint: {"center_x": 0.5}
-                on_release: root.go_back_to_dashboard()
-                background_color: 0.2, 0.6, 0.86, 1  # Button color
-                color: 1, 1, 1, 1  # Text color
 
-        # Bottom Navigation Bar
-        BoxLayout:
-            orientation: 'horizontal'
-            size_hint: (1, None)
-            height: dp(60)
-            padding: dp(10)
-            spacing: dp(10)
-            pos_hint: {'x': 0, 'y': 0}  # Positioned at the bottom
 
-            Button:
-                text: "Home"
-                size_hint: (None, 1)
-                width: dp(100)
-                on_release:
-                    app.root.current = 'home'
-
-            Button:
-                text: "Adventure"
-                size_hint: (None, 1)
-                width: dp(100)
-                on_release:
-                    app.root.current = 'adventure'
-
-            TextInput:
-                id: search_input_experiment
-                hint_text: "Ask..."
-                size_hint: (1, 1)
-                multiline: False
-
-            Button:
-                text: "Ask"
-                size_hint: (None, 1)
-                width: dp(100)
-                on_release:
-                    # Implement ask functionality
-                    print(f"Ask: {search_input_experiment.text}")
